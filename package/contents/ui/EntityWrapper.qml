@@ -119,7 +119,9 @@ MouseArea {
                         acceptedDevices: PointerDevice.TouchPad | PointerDevice.Mouse
                         orientation: Qt.Vertical
                         onWheel: e => {
-                            const p = position + e.angleDelta.y / 3600
+                            // High-resolution wheels may send small deltas in rapid succession using the pixelDelta
+                            const delta = e.pixelDelta.y ? e.pixelDelta.y * 8 : e.angleDelta.y
+                            const p = position + delta / 3600
                             position = p > 1 ? 1 : p < 0 ? 0 : p
                         }
                         onActiveChanged: !active && callService(scroll_action, { [scroll_action.data_field]: mapper.denormalize(position) })
